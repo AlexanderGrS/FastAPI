@@ -1,22 +1,17 @@
 package main
 
 import (
+	"FastAPI/internal/handlers"
 	"fmt"
 	"log"
 	"net/http"
-	"testApi/internal/handlers"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
-
-	// Init the mux router
 	router := mux.NewRouter()
 
-	// Route handles & endpoints
-
-	// Get all Recipes
 	router.HandleFunc("/recipes/GetAllRecipes", handlers.GetAllRecipes).Methods("GET")
 	router.HandleFunc("/recipes/GetRecipe", handlers.GetRecipe).Methods("GET")
 	router.HandleFunc("/recipes/GetRecipesSortedByIngredients", handlers.GetRecipesSortedByIngredients).Methods("GET")

@@ -1,11 +1,11 @@
 package handlers
 
 import (
+	"FastAPI/config"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"testApi/config"
 
 	_ "github.com/lib/pq"
 )
@@ -44,13 +44,10 @@ func GetAllRecipes(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := db.Query(cfg.DBqueries.GetAllRecipes)
 
-	// check errors
 	checkErr(err)
 
-	// var response []JsonResponse
 	var recipes []Recipe
 
-	// Foreach movie
 	for rows.Next() {
 		var id int
 		var name string
@@ -62,7 +59,6 @@ func GetAllRecipes(w http.ResponseWriter, r *http.Request) {
 
 		err = rows.Scan(&id, &name, &description, &ingredients, &cooking_steps, &cooking_time, &recipe_rating)
 
-		// check errors
 		checkErr(err)
 
 		recipes = append(recipes, Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating})
@@ -101,12 +97,9 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) {
 
 	err := row.Scan(&id, &name, &description, &ingredients, &cooking_steps, &cooking_time, &recipe_rating)
 
-	// check errors
 	checkErr(err)
 
 	recipe := Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating}
-
-	//response = JsonResponse{Type: "error",Data: recipe, Message: "You need to insert id, id is null"}
 
 	json.NewEncoder(w).Encode(recipe)
 }
@@ -120,13 +113,10 @@ func GetRecipesSortedByIngredients(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := db.Query(cfg.DBqueries.GetRecipesSortedByIngredients)
 
-	// check errors
 	checkErr(err)
 
-	// var response []JsonResponse
 	var recipes []Recipe
 
-	// Foreach movie
 	for rows.Next() {
 		var id int
 		var name string
@@ -138,7 +128,6 @@ func GetRecipesSortedByIngredients(w http.ResponseWriter, r *http.Request) {
 
 		err = rows.Scan(&id, &name, &description, &ingredients, &cooking_steps, &cooking_time, &recipe_rating)
 
-		// check errors
 		checkErr(err)
 
 		recipes = append(recipes, Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating})
@@ -159,13 +148,10 @@ func GetRecipesSortedByCookingTime(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := db.Query(cfg.DBqueries.GetAllRecipes)
 
-	// check errors
 	checkErr(err)
 
-	// var response []JsonResponse
 	var oldRecipes []Recipe
 
-	// Foreach movie
 	for rows.Next() {
 		var id int
 		var name string
@@ -177,7 +163,6 @@ func GetRecipesSortedByCookingTime(w http.ResponseWriter, r *http.Request) {
 
 		err = rows.Scan(&id, &name, &description, &ingredients, &cooking_steps, &cooking_time, &recipe_rating)
 
-		// check errors
 		checkErr(err)
 
 		oldRecipes = append(oldRecipes, Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating})

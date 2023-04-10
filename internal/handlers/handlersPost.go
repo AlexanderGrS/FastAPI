@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"FastAPI/config"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"testApi/config"
 
 	_ "github.com/lib/pq"
 )
@@ -28,7 +28,6 @@ func CreateRecipe(w http.ResponseWriter, r *http.Request) {
 	var lastInsertID int
 	err := db.QueryRow(cfg.DBqueries.CreateRecipes, name, description, ingredients, cooking_steps, cooking_time, recipe_rating).Scan(&lastInsertID)
 
-	// check errors
 	checkErr(err)
 
 	var response = JsonResponse{Type: "success", Message: "Insert new recipe"}
@@ -62,7 +61,6 @@ func ChangeRecipe(w http.ResponseWriter, r *http.Request) {
 
 	err := row.Scan(&oldRecipe.Id, &oldRecipe.Name, &oldRecipe.Description, &oldRecipe.Ingredients, &oldRecipe.Cooking_steps, &oldRecipe.Cooking_time, &oldRecipe.Recipe_rating)
 
-	// check errors
 	checkErr(err)
 
 	printMessage("Changing recipe")
@@ -89,10 +87,8 @@ func ChangeRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(id, name, description, ingredients, cooking_steps, cooking_time, recipe_rating, "Insert this")
 
-	//var lastInsertID int
 	_, err = db.Exec(cfg.DBqueries.ChangeRecipe, name, description, ingredients, cooking_steps, cooking_time, recipe_rating, id)
 
-	// check errors
 	checkErr(err)
 
 	response = JsonResponse{Type: "success", Message: fmt.Sprintf("recipe with Id = %s successfuly changed", id)}
@@ -118,10 +114,8 @@ func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(id, "Delete this")
 
-	//var lastInsertID int
 	_, err := db.Exec(cfg.DBqueries.DeleteRecipe, id)
 
-	// check errors
 	checkErr(err)
 
 	response = JsonResponse{Type: "success", Message: fmt.Sprintf("recipe with Id = %s successfuly deleted", id)}
