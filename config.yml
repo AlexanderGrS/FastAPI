@@ -1,0 +1,14 @@
+storage:
+  database: postgres
+  username: postgres
+  password: Montes99
+
+DBqueries:
+  getallrecipes: SELECT * FROM recipes ORDER BY id;
+  createrecipes: INSERT INTO recipes(name,description,ingredients,cooking_steps,cooking_time,recipe_rating) VALUES($1, $2, $3, $4, $5, $6) returning id;
+  getrecipe: SELECT * FROM recipes WHERE id=$1;
+  changerecipe: UPDATE recipes SET name = $1, description = $2, ingredients = $3,cooking_steps = $4,cooking_time = $5,recipe_rating = $6 WHERE id = $7;
+  deleterecipe: DELETE FROM recipes where id = $1;
+  getrecipessortedbyingredients: SELECT * FROM recipes ORDER BY ingredients DESC;
+  deletetable: DROP TABLE recipes;
+  createtable: CREATE TABLE recipes(id SERIAL NOT NULL PRIMARY KEY,name VARCHAR(50) NOT NULL,description VARCHAR(500),ingredients VARCHAR(200),cooking_steps VARCHAR(2000),cooking_time VARCHAR(100),recipe_rating FLOAT4);
