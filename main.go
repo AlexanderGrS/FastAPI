@@ -1,6 +1,8 @@
 package main
 
 import (
+	"FastAPI/auth/authdb"
+	"FastAPI/auth/middleware"
 	"FastAPI/internal/handlers"
 	"fmt"
 	"log"
@@ -18,14 +20,14 @@ func main() {
 	router.HandleFunc("/recipes/GetRecipesSortedByCookingTime", handlers.GetRecipesSortedByCookingTime).Methods("GET")
 	router.HandleFunc("/recipes/GetRecipesSortedByRating", handlers.GetRecipesSortedByRating).Methods("GET")
 
-	router.Headers().Methods()
-	router.HandleFunc("/recipes/CreateRecipe", handlers.CreateRecipe).Methods("POST")
-	router.HandleFunc("/recipes/ChangeRecipe", handlers.ChangeRecipe).Methods("POST")
-	router.HandleFunc("/recipes/DeleteRecipe", handlers.DeleteRecipe).Methods("POST")
-	router.HandleFunc("/recipes/SortingRecipesByCookingTime", handlers.SortingRecipesByCookingTime).Methods("POST")
-	router.HandleFunc("/recipes/SortingRecipesByRating", handlers.SortingRecipesByRating).Methods("POST")
+	router.Handle("/recipes/CreateRecipe", middleware.BasicAuth(http.HandlerFunc(handlers.CreateRecipe))).Methods("POST")
+	router.Handle("/recipes/ChangeRecipe", middleware.BasicAuth(http.HandlerFunc(handlers.ChangeRecipe))).Methods("POST")
+	router.Handle("/recipes/DeleteRecipe", middleware.BasicAuth(http.HandlerFunc(handlers.DeleteRecipe))).Methods("POST")
+	router.Handle("/recipes/SortingRecipesByCookingTime", middleware.BasicAuth(http.HandlerFunc(handlers.SortingRecipesByCookingTime))).Methods("POST")
+	router.Handle("/recipes/SortingRecipesByRating", middleware.BasicAuth(http.HandlerFunc(handlers.SortingRecipesByRating))).Methods("POST")
 
-	// serve the app
+	router.HandleFunc("/auth/SignUp", authdb.SignUp).Methods("POST")
+
 	fmt.Println("Server at 8000")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }

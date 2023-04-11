@@ -26,6 +26,8 @@ type DBqueriesConfig struct {
 	GetRecipesSortedByIngredients string `json:"getrecipessortedbyingredients"`
 	DeleteTable                   string `json:"deletetable"`
 	CreateTable                   string `json:"createtable"`
+	SignUp                        string `json:"signup"`
+	SignIn                        string `json:"signin"`
 }
 
 var instance *Config

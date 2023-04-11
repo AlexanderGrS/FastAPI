@@ -12,3 +12,5 @@ DBqueries:
   getrecipessortedbyingredients: SELECT * FROM recipes ORDER BY ingredients ASC;
   deletetable: DROP TABLE recipes;
   createtable: CREATE TABLE recipes(id SERIAL NOT NULL PRIMARY KEY,name VARCHAR(50) NOT NULL,description VARCHAR(500),ingredients VARCHAR(200),cooking_steps VARCHAR(2000),cooking_time VARCHAR(100),recipe_rating FLOAT4);
+  signup: INSERT INTO users(db_user,password) VALUES($1, $2);
+  signin: SELECT * FROM users WHERE db_user=$1;

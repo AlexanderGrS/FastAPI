@@ -98,7 +98,6 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) {
 	err := row.Scan(&id, &name, &description, &ingredients, &cooking_steps, &cooking_time, &recipe_rating)
 
 	checkErr(err)
-
 	recipe := Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating}
 
 	json.NewEncoder(w).Encode(recipe)
