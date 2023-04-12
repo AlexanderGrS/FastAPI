@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"FastAPI/config"
+	"FastAPI/helpers"
+	"FastAPI/models"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -21,16 +23,16 @@ func CreateRecipe(w http.ResponseWriter, r *http.Request) {
 
 	db := setupDB(cfg.Storage)
 
-	printMessage("Inserting movie into DB")
+	helpers.PrintMessage("Inserting movie into DB")
 
 	fmt.Println(name, description, ingredients, cooking_steps, cooking_time, recipe_rating, "Insert this")
 
 	var lastInsertID int
 	err := db.QueryRow(cfg.DBqueries.CreateRecipes, name, description, ingredients, cooking_steps, cooking_time, recipe_rating).Scan(&lastInsertID)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
-	var response = JsonResponse{Type: "success", Message: "Insert new recipe"}
+	var response = models.JsonResponse{Type: "success", Message: "Insert new recipe"}
 
 	json.NewEncoder(w).Encode(response)
 }
@@ -44,14 +46,14 @@ func ChangeRecipe(w http.ResponseWriter, r *http.Request) {
 	cooking_time := r.FormValue("cooking_time")
 	recipe_rating := r.FormValue("recipe_rating")
 
-	var response = JsonResponse{}
+	var response = models.JsonResponse{}
 
 	if id == "" {
-		response = JsonResponse{Type: "error", Message: "You need to insert id, id is null"}
+		response = models.JsonResponse{Type: "error", Message: "You need to insert id, id is null"}
 		json.NewEncoder(w).Encode(response)
 	}
 
-	var oldRecipe Recipe
+	var oldRecipe models.Recipe
 
 	cfg := config.GetConfig()
 
@@ -61,9 +63,9 @@ func ChangeRecipe(w http.ResponseWriter, r *http.Request) {
 
 	err := row.Scan(&oldRecipe.Id, &oldRecipe.Name, &oldRecipe.Description, &oldRecipe.Ingredients, &oldRecipe.Cooking_steps, &oldRecipe.Cooking_time, &oldRecipe.Recipe_rating)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
-	printMessage("Changing recipe")
+	helpers.PrintMessage("Changing recipe")
 
 	fmt.Println(id, name, description, ingredients, cooking_steps, cooking_time, recipe_rating, "Insert this")
 
@@ -89,9 +91,9 @@ func ChangeRecipe(w http.ResponseWriter, r *http.Request) {
 
 	_, err = db.Exec(cfg.DBqueries.ChangeRecipe, name, description, ingredients, cooking_steps, cooking_time, recipe_rating, id)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
-	response = JsonResponse{Type: "success", Message: fmt.Sprintf("recipe with Id = %s successfuly changed", id)}
+	response = models.JsonResponse{Type: "success", Message: fmt.Sprintf("recipe with Id = %s successfuly changed", id)}
 
 	json.NewEncoder(w).Encode(response)
 }
@@ -99,10 +101,10 @@ func ChangeRecipe(w http.ResponseWriter, r *http.Request) {
 func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 
-	var response = JsonResponse{}
+	var response = models.JsonResponse{}
 
 	if id == "" {
-		response = JsonResponse{Type: "error", Message: "You need to insert id, id is null"}
+		response = models.JsonResponse{Type: "error", Message: "You need to insert id, id is null"}
 		json.NewEncoder(w).Encode(response)
 	}
 
@@ -110,15 +112,15 @@ func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 
 	db := setupDB(cfg.Storage)
 
-	printMessage("Deleting recipe")
+	helpers.PrintMessage("Deleting recipe")
 
 	fmt.Println(id, "Delete this")
 
 	_, err := db.Exec(cfg.DBqueries.DeleteRecipe, id)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
-	response = JsonResponse{Type: "success", Message: fmt.Sprintf("recipe with Id = %s successfuly deleted", id)}
+	response = models.JsonResponse{Type: "success", Message: fmt.Sprintf("recipe with Id = %s successfuly deleted", id)}
 
 	json.NewEncoder(w).Encode(response)
 }
@@ -128,13 +130,13 @@ func SortingRecipesByRating(w http.ResponseWriter, r *http.Request) {
 
 	db := setupDB(cfg.Storage)
 
-	printMessage("Sorted by Rating")
+	helpers.PrintMessage("Sorted by Rating")
 
 	rows, err := db.Query(cfg.DBqueries.GetAllRecipes)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
-	var oldRecipes []Recipe
+	var oldRecipes []models.Recipe
 
 	for rows.Next() {
 		var id int
@@ -147,29 +149,29 @@ func SortingRecipesByRating(w http.ResponseWriter, r *http.Request) {
 
 		err = rows.Scan(&id, &name, &description, &ingredients, &cooking_steps, &cooking_time, &recipe_rating)
 
-		checkErr(err)
+		helpers.CheckErr(err)
 
-		oldRecipes = append(oldRecipes, Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating})
+		oldRecipes = append(oldRecipes, models.Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating})
 	}
 
-	recipes := sortRecipesByRating(oldRecipes)
+	recipes := helpers.SortRecipesByRating(oldRecipes)
 
 	_, err = db.Exec(cfg.DBqueries.DeleteTable)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
 	_, err = db.Exec(cfg.DBqueries.CreateTable)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
 	for i := 0; i < len(recipes); i++ {
 		var lastInsertID int
 		err := db.QueryRow(cfg.DBqueries.CreateRecipes, recipes[i].Name, recipes[i].Description, recipes[i].Ingredients, recipes[i].Cooking_steps, recipes[i].Cooking_time, recipes[i].Recipe_rating).Scan(&lastInsertID)
 
-		checkErr(err)
+		helpers.CheckErr(err)
 	}
 
-	var response = JsonResponse{Type: "success", Message: "Table recipes sorted by rating"}
+	var response = models.JsonResponse{Type: "success", Message: "Table recipes sorted by rating"}
 
 	json.NewEncoder(w).Encode(response)
 
@@ -180,13 +182,13 @@ func SortingRecipesByCookingTime(w http.ResponseWriter, r *http.Request) {
 
 	db := setupDB(cfg.Storage)
 
-	printMessage("Sorted by Time")
+	helpers.PrintMessage("Sorted by Time")
 
 	rows, err := db.Query(cfg.DBqueries.GetAllRecipes)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
-	var oldRecipes []Recipe
+	var oldRecipes []models.Recipe
 
 	for rows.Next() {
 		var id int
@@ -199,29 +201,29 @@ func SortingRecipesByCookingTime(w http.ResponseWriter, r *http.Request) {
 
 		err = rows.Scan(&id, &name, &description, &ingredients, &cooking_steps, &cooking_time, &recipe_rating)
 
-		checkErr(err)
+		helpers.CheckErr(err)
 
-		oldRecipes = append(oldRecipes, Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating})
+		oldRecipes = append(oldRecipes, models.Recipe{Id: id, Name: name, Description: description, Ingredients: ingredients, Cooking_steps: cooking_steps, Cooking_time: cooking_time, Recipe_rating: recipe_rating})
 	}
 
-	recipes := sortRecipesByTime(oldRecipes)
+	recipes := helpers.SortRecipesByTime(oldRecipes)
 
 	_, err = db.Exec(cfg.DBqueries.DeleteTable)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
 	_, err = db.Exec(cfg.DBqueries.CreateTable)
 
-	checkErr(err)
+	helpers.CheckErr(err)
 
 	for i := 0; i < len(recipes); i++ {
 		var lastInsertID int
 		err := db.QueryRow(cfg.DBqueries.CreateRecipes, recipes[i].Name, recipes[i].Description, recipes[i].Ingredients, recipes[i].Cooking_steps, recipes[i].Cooking_time, recipes[i].Recipe_rating).Scan(&lastInsertID)
 
-		checkErr(err)
+		helpers.CheckErr(err)
 	}
 
-	var response = JsonResponse{Type: "success", Message: "Table recipes sorted by cooking time"}
+	var response = models.JsonResponse{Type: "success", Message: "Table recipes sorted by cooking time"}
 
 	json.NewEncoder(w).Encode(response)
 

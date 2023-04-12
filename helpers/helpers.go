@@ -1,6 +1,7 @@
-package handlers
+package helpers
 
 import (
+	"FastAPI/models"
 	"fmt"
 	"strconv"
 )
@@ -11,9 +12,9 @@ const (
 	secondInKirilic = 129
 )
 
-func sortRecipesByRating(oldRecipes []Recipe) (recipes []Recipe) {
+func SortRecipesByRating(oldRecipes []models.Recipe) (recipes []models.Recipe) {
 	var orderedIndexes []int
-	var oldRecipeSlice []Recipe
+	var oldRecipeSlice []models.Recipe
 	for i := 0; i < len(oldRecipes); i++ {
 		oldRecipeSlice = append(oldRecipeSlice, oldRecipes[i])
 	}
@@ -36,14 +37,14 @@ func sortRecipesByRating(oldRecipes []Recipe) (recipes []Recipe) {
 	for i := 0; i < len(orderedIndexes); i++ {
 		for j := 0; j < len(o); j++ {
 			if o[j].Id == orderedIndexes[i] {
-				recipes = append(recipes, Recipe{Id: o[j].Id, Name: o[j].Name, Description: o[j].Description, Ingredients: o[j].Ingredients, Cooking_steps: o[j].Cooking_steps, Cooking_time: o[j].Cooking_time, Recipe_rating: o[j].Recipe_rating})
+				recipes = append(recipes, models.Recipe{Id: o[j].Id, Name: o[j].Name, Description: o[j].Description, Ingredients: o[j].Ingredients, Cooking_steps: o[j].Cooking_steps, Cooking_time: o[j].Cooking_time, Recipe_rating: o[j].Recipe_rating})
 			}
 		}
 	}
 	return recipes
 }
 
-func sortRecipesByTime(oldRecipes []Recipe) (recipes []Recipe) {
+func SortRecipesByTime(oldRecipes []models.Recipe) (recipes []models.Recipe) {
 	recipesWithIdAndTime := parseCookingTime(oldRecipes)
 	var orderedIndexes []int
 	for len(recipesWithIdAndTime) != 0 {
@@ -61,14 +62,14 @@ func sortRecipesByTime(oldRecipes []Recipe) (recipes []Recipe) {
 	for i := len(orderedIndexes) - 1; i >= 0; i-- {
 		for j := 0; j < len(o); j++ {
 			if o[j].Id == orderedIndexes[i] {
-				recipes = append(recipes, Recipe{Id: o[j].Id, Name: o[j].Name, Description: o[j].Description, Ingredients: o[j].Ingredients, Cooking_steps: o[j].Cooking_steps, Cooking_time: o[j].Cooking_time, Recipe_rating: o[j].Recipe_rating})
+				recipes = append(recipes, models.Recipe{Id: o[j].Id, Name: o[j].Name, Description: o[j].Description, Ingredients: o[j].Ingredients, Cooking_steps: o[j].Cooking_steps, Cooking_time: o[j].Cooking_time, Recipe_rating: o[j].Recipe_rating})
 			}
 		}
 	}
 	return recipes
 }
 
-func parseCookingTime(recipes []Recipe) map[int]int {
+func parseCookingTime(recipes []models.Recipe) map[int]int {
 	recipesWithIdAndTime := make(map[int]int)
 	for i := 0; i < len(recipes); i++ {
 		var timeInSeconds int
@@ -104,13 +105,13 @@ func parseCookingTime(recipes []Recipe) map[int]int {
 	return recipesWithIdAndTime
 }
 
-func printMessage(message string) {
+func PrintMessage(message string) {
 	fmt.Println("")
 	fmt.Println(message)
 	fmt.Println("")
 }
 
-func checkErr(err error) {
+func CheckErr(err error) {
 	if err != nil {
 		panic(err)
 	}
